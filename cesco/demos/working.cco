@@ -1,0 +1,30 @@
+func from_vec2(f32(2) vec, bool grog) -> i32[2]
+{
+    f32 x = 5;
+    f32 y = 10;
+
+    f32 phi = atan(y, x);
+    f32 rho = length();
+
+    mut str hello = "hello world";
+
+    while true {
+
+        rad = 5.0;
+
+        while grog {
+            break;
+        }
+    }
+
+    return angle;
+}
+
+
+func main() -> i32 {
+    f32(2) par = default;
+
+    i32[2] ret = from_vec2(par, false);
+
+    return 0;
+}

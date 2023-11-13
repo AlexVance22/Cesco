@@ -1,0 +1,58 @@
+C -> E<E | E>E | E<=E | E>=E | E
+E -> T+E | T-E | T
+T -> F*T | F/T | F
+F -> INT | FLT | ID | (E) | -F
+
+Q -> E==E | E!=E | E
+E -> T||E | T
+T -> F&&T | F
+F -> BOOL | ID | (E) | !F
+
+E -> T{+|- T}*
+T -> F{*|/ F}*
+
+========================================================
+
+E -> "default" | V | EQ
+V -> STR | ME | BE
+
+EQ -> V==V | V!=V | ME<ME | ME>ME | ME<=ME | ME>=ME
+
+BE -> BT||BE | BT
+BT -> BF&&BT | BF
+BF -> "true" | "false" | ID | (BE) | !BF
+
+ME -> MT+ME | MT-ME | MT
+MT -> MF*MT | MF/MT | MF
+MF -> INT   | FLT   | ID | (ME) | -MF
+
+========================================================
+
+E -> "default" | V | EQ | CMP
+V -> STR | ME | BE
+
+EQ -> V==V | V!=V
+CMP -> ME<ME | ME>ME | ME<=ME | ME>=ME
+
+BE -> BT{|| BT}*
+BE -> BF{&& BF}*
+BF -> "true" | "false" | ID | (BE) | !BF
+
+ME -> MT{+|- ME}*
+ME -> MT{*|/ ME}*
+MF -> INT | FLT | ID | (ME) | -MF
+
+========================================================
+
+E -> "default" | EQ
+
+EQ -> C==C | C!=C | C
+C -> Q<Q | Q>Q | Q<=Q | Q>=Q | Q
+
+Q -> A{|| A}*
+A -> M{&& M}*
+M -> T{+|- T}*
+T -> F{*|/ F}*
+F -> INT | FLT | STR | "true" | "false" | ID | (EQ) | -F | !F
+
+========================================================

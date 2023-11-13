@@ -1,0 +1,2 @@
+nasm -f win64 -o test.obj test.asm
+gcc -nolibc -o test.exe test.obj

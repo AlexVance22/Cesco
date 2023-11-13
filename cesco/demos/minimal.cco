@@ -1,0 +1,56 @@
+//Cesco
+/*
+version 0.1
+demo program
+*/
+
+
+struct PolarCoord
+{
+	pub f32 phi,
+	pub f32 rho 
+}
+
+func PolarCoord.rotate(this&, f32 angle) {
+	this.r += angle;
+}
+
+func PolarCoord.default() -> PolarCoord {
+	return PolarCoord{ 0.0, 0.0 };
+}
+
+func PolarCoord.from_vec2(f32(2)& vec) -> PolarCoord {
+	f32 angle = math.atan(vec.y / vec.x);
+	f32 rad = vec.length();
+
+	return PolarCoord{ phi: angle, rho: rad };
+}
+
+
+func main()
+{
+	mut PolarCoord pos = default;
+	pos.rotate(5.0);
+
+	mut f32[2] numbers = [1.0, 2.0];
+
+	mut f32 time = 0.0;
+
+	while true
+	{
+		if io.keyboard.pressed("A")
+		{
+			pos.rotate(5.0);
+		}
+		if io.keyboard.pressed("B")
+		{
+			break;
+		}
+
+		std.sleep(0.05);
+		time += 0.05;
+	}
+
+	io.stdout.puts("Ending\n");
+	io.stdout.print("Time elapsed: {}\n", time);
+}

@@ -1,0 +1,15 @@
+[submodule "asm_backend"]
+	path = asm_backend
+	url = ./asm_backend
+[submodule "c_backend"]
+	path = c_backend
+	url = ./c_backend
+[submodule "pesco"]
+	path = pesco
+	url = ./pesco
+[submodule "cesco"]
+	path = cesco
+	url = ./cesco
+[submodule "ir"]
+	path = ir
+	url = ./ir

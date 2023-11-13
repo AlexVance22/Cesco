@@ -1,0 +1,85 @@
+//Cesco
+/*
+version 1.0
+demo program
+*/
+
+import std;
+import io;
+import math;
+
+
+struct::obj PolarCoord {
+	pub f32 phi = 3.1415,
+	pub f32 rho = 1.0,
+}
+
+func PolarCoord.from_vec2(f32(2)& vec) -> PolarCoord {
+	f32 angle = math.atan(vec.y / vec.x);
+	f32 rad = math.length(vec);
+
+	return PolarCoord{ phi: angle, rho: rad };
+}
+
+func PolarCoord.rotate(mut this&, f32 angle) {
+	this->r += angle;
+}
+
+struct Player := null;
+
+struct::comp Pos := f32(2);
+struct::comp Name := str;
+struct::comp Health := u32;
+struct::comp Ai {
+	pub i32 intel = 100;
+	pub bool moral = false;
+}
+
+struct::enum TestEnum {
+	
+}
+
+
+//takes single component or iterable of aggrs all of which must contain correct component (builtin array)
+func Health.take_dmg(mut comp&, i32 dmg) {
+	comp -= dmg;
+
+	aggr& entity = std.get_owner(comp);
+}
+
+
+func main() {
+	mut PolarCoord pos = default;
+	pos.rotate(5.0);
+	PolarCoord from = PolarCoord.from_vec2(f32(2){ 5.0, 5.0 });
+
+	mut aggr player: Name|Pos|Health|Player;
+	mut aggr enemy1: Name|Pos|Health|Ai;
+	mut aggr enemy2: Name|Pos|Health|Ai;
+
+	mut aggr[2] enemies = [enemy1, enemy2];
+
+	take_dmg(enemies->Health, 10);
+
+	player->Health = 40;
+
+	f32(3) vec3d = default;
+	f32(2) vec2d = vec3d.xy;
+
+	mut f32 time = 0.0;
+
+	while true {
+		if io.keyboard.pressed("A") {
+			take_dmg(enemies->Health, 10);
+		}
+		if io.keyboard.pressed("B") {
+			break;
+		}
+
+		std.sleep(std.Time.from_s(0.05));
+		time += 0.05;
+	}
+
+	io.stdout.puts("Ending\n");
+	io.stdout.print("Time elapsed: {}\n", time);
+}

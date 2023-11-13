@@ -1,0 +1,199 @@
+extern "C" {
+    func Sleep(i32 dwMilliseconds);
+
+    func GetCommandLineA() -> str;
+
+    func CommandLineToArgvW(str lpCmdLine, i32* pNumArgs) -> str*;
+}
+
+
+pub struct Time {
+    i32 ms,
+}
+
+pub func Time.from_ms(i32 ms) -> Time {
+    return Time{ ms: ms };
+}
+
+pub func Time.from_s(i32 s) -> Time {
+    return Time{ ms: s * 1000 };
+}
+
+pub func Time.as_ms(this&, i32 ms) -> i32 {
+    return this->ms;
+}
+
+pub func Time.as_s(this&, i32 ms) -> i32 {
+    return this->ms / 1000;
+}
+
+pub func sleep(Time t) {
+    Sleep(time.as_ms());
+}
+
+
+pub struct Range {
+    i64 stop,
+    i64 step,
+    i64 i,
+}
+
+[ctor]
+pub func Range.new(i64 count) -> Range {
+    return Range{
+        stop: count,
+        step: 1,
+        i: 0,
+    };
+}
+
+[ctor]
+pub func Range.new(i64 start, i64 stop) -> Range {
+    return Range{
+        stop: stop,
+        step: 1,
+        i: start,
+    };
+}
+
+[ctor]
+pub func Range.new(i64 start, i64 stop, i64 step) -> Range {
+    return Range{
+        stop: stop,
+        step: step,
+        i: start,
+    };
+}
+
+
+[iter]
+pub func Range.next(mut this&) -> i64? {
+    i64 old = this->i;
+
+    this->i += this->step;
+
+    if this->i < this->stop {
+        return old;
+    } else {
+        return null;
+    }
+}
+
+
+mod env {
+    /*
+    pub struct ArgV {
+        str source,
+        usize lastend,
+        bool terminal
+    }
+
+    pub func next(&mut this) -> str? {
+        if this->terminal {
+            return Null;
+        }
+
+        usize start = this->lastend;
+        mut usize i = this->lastend;
+
+        bool quote = this->source[i] == '"';
+
+        while this->source[i] {
+            if quote {
+                if this->source[i] == ' ' {
+                    this->lastend = i;
+                    return this->source[start..i];
+                }
+            } else {
+                if this->source[i] == ' ' {
+                    this->lastend = i;
+                    return this->source[start..i];
+                }
+            }
+        }
+
+        this->terminal = true;
+
+        return this->source[start..i];
+    }
+    */
+
+
+    pub struct ArgV {
+        i32 argc,
+        str* argv,
+        i32 i
+    }
+
+    [iter] // explicit enabling of for loop syntax sugar -- bikeshed syntax
+    pub func ArgV.next(mut this&) -> str? {
+        if this->i < argc {
+            return this->argv[i];
+        } else {
+            return null;
+        }
+    }
+
+    pub func argv() -> ArgV {
+        mut i32 argc = 0;
+        str cmdline = GetCommandLineA();
+        str* argv = CommandLineToArgvW(cmdline, &argc);
+
+        return Argv{
+            argv: argv,
+            argc: argc,
+            i: 0
+        };
+    }
+}
+
+
+// reference types are never nullable
+// pointer types are always nullable
+// values types can be made nullable with '?'
+
+// memory layout
+//  - pointers are as usual (nullptr stuff)
+//  - values are as if in a struct Nullable<T> { bool has, T val, }
+
+
+func test_argv() -> bool {
+    mut ArgV args = env.argv();
+
+    str program = get args.next(); // 'get' checked in debug mode - will throw somehow - or segfault probably
+
+    // ask [nullable] else [expr] -- allow for default value
+    str arg1 = ask args.next() else "nonexistent arg";
+    io.print(arg3);
+
+    // ask [nullable] else [block] -- allow for error handling plus default value
+    str arg2 = ask args.next() else {
+        io.stdout.print("missing arg");
+        yield "nonexistent arg";
+    };
+    io.print(arg3);
+
+    // ask [nullable] or [block] -- allow for error handling or early return
+    str arg3 = ask args.next() else {
+        io.stdout.print("missing arg");
+        return false;
+    };
+    io.print(arg3);
+
+    // while ask [nullable] as [name] -- essentially rust 'while let Some(_)' loop
+    while ask args.next() as arg {
+        io.print(arg);
+    }
+
+    // for arg in args {
+    //    ...
+    // }
+
+    for i in Range(5) {
+        
+    }
+
+    // nulls cannot be "dereferenced" without 'ask'ing
+
+    return true;
+}

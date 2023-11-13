@@ -1,0 +1,28 @@
+
+func test_func(i32 x, i32 y) -> i32 {
+
+    i32& z = &x;
+
+    i32* a = null;
+
+    //i32[5] test = [ 1, 2, 3, 4, 5 ];
+
+    if true {
+        i32 x = 0x45;
+    }
+
+    //*a = test[3] / 2;
+
+    return 5;
+}
+
+
+func main() -> i32 {
+    i32 x = 10;
+    i32 y = 20;
+
+    test_func(x, y);
+
+    return x;
+}
+

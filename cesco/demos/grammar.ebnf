@@ -1,0 +1,25 @@
+function        -> "func" IDENTIFIER "(" ( parameter ","? )* ")" "->" type "{" statement* "}" ;
+
+parameter       -> type IDENTIFIER ;
+
+statement       -> declaration | assignment | call | return | "break" | if | while | for ;
+
+declaration     -> type IDENTIFIER "=" expression ";" ;
+assignment      -> IDENTIFIER assignop expression ";" ;
+assignop        -> "=" | "+=" | "-=" | "*=" | "/=" ;
+
+call            -> IDENTIFIER "(" ( expression ","? )* ")" ";" ;
+return          -> "return" expression? ";" ;
+
+if              -> "if" expression "{" statement* "}" ;
+while           -> "while" whilecond "{" statement* "}";
+whilecond       -> expression | "ask" expression "as" IDENTIFIER ;
+for             -> "for" IDENTIFIER "in" expression "{" statement* "}" ;
+
+expression      -> literal | unary | binary | grouping | call | IDENTIFIER | "default" ;
+
+literal         -> NUMBER | STRING | "true" | "false" | "null" ;
+grouping        -> "(" expression ")" ;
+unary           -> ( "&" | "-" | "!" ) expression ;
+binary          -> expression operator expression ;
+operator        -> "==" | "!=" | "<" | ">" | "<=" | ">=" | "+"  | "-"  | "*" | "/" ;

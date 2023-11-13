@@ -1,0 +1,88 @@
+extern "C" {
+    func GetStdHandle(i32 handle) -> __cvoid*;
+
+    func WriteFile(__cvoid* hFile, __cvoid* lpBuffer, u32 nNumberOfBytesToWrite, mut u32* lpNumberOfBytesWritten, __cvoid* lpOverlapped) -> bool;
+
+    func CreateFileA(str file, i32 desiredAccess, i32 fileShare, __cvoid* dummy1, i32 creationDisposition, i32 fileAttributes, __cvoid* dummy2) -> __cvoid*;
+}
+
+
+pub struct FileStream {
+    __cvoid* handle,
+}
+
+pub FileStream stdin = FileStream{ handle: GetStdHandle(-10), };
+pub FileStream stdout = FileStream{ handle: GetStdHandle(-11), };
+pub FileStream stderr = FileStream{ handle: GetStdHandle(-12), };
+
+
+struct FileParams {
+    pub i32 desiredAccess,
+    pub i32 creationDisposition,
+}
+
+pub func FileStream.open(str filename, str mode) -> FileStream? {
+    mut FileParams params;
+
+    i32 GENERIC_READ = 0x80000000;
+    i32 GENERIC_WRITE = 0x40000000;
+    i32 CREATE_ALWAYS = 2;
+    i32 OPEN_EXISTING = 3;
+    i32 OPEN_ALWAYS = 4;
+    i32 FILE_SHARE_READ = 0x00000001;
+    i32 FILE_ATTRIBUTE_NORMAL = 0x80;
+    i32 INVALID_HANDLE_VALUE = -1;
+
+    if (mode[0] == 'r') {
+        i32 rw = GENERIC_WRITE * (mode[1] == '+');
+        params.desiredAccess = GENERIC_READ | rw;
+        params.creationDisposition = OPEN_EXISTING;
+    } else if (mode[0] == 'a') {
+        i32 rw = GENERIC_READ * (mode[1] == '+');
+        params.desiredAccess = GENERIC_WRITE | rw;
+        params.creationDisposition = OPEN_ALWAYS;
+    } else if (mode[0] == 'w') {
+        i32 rw = GENERIC_READ * (mode[1] == '+');
+        params.desiredAccess = GENERIC_WRITE | rw;
+        params.creationDisposition = CREATE_ALWAYS;
+    } else {
+        return null;
+    }
+
+    __cvoid* handle = CreateFileA(
+        filename,
+        params.desiredAccess,
+        FILE_SHARE_READ,
+        null,
+        params.creationDisposition,
+        FILE_ATTRIBUTE_NORMAL,
+        null
+    );
+
+    if handle == INVALID_HANDLE_VALUE {
+        return null;
+    }
+    
+    return FileStream{ handle: handle };
+}
+
+func FileStream.puts(mut this&, str value) {
+    mut u32 bytes_written = default;
+
+    WriteFile((__cvoid*)this->handle, (__cvoid*)value, value.len(), &mut bytes_written, null);
+}
+
+pub func FileStream.print(mut this&, str value, ...args) {
+    mut u32 bytes_written = default;
+
+    WriteFile((__cvoid*)this->handle, (__cvoid*)value, value.len(), &mut bytes_written, null);
+}
+
+pub func FileStream.close(mut this&) {
+    CloseHandle(this->handle);
+}
+
+
+delete stdin.close();
+delete stdout.close();
+delete stderr.close();
